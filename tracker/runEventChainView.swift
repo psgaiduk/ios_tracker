@@ -1,15 +1,15 @@
 import SwiftUI
+import AVFoundation // для AVAudioPlayer
 
 struct RunEventChainView: View {
     let chain: EventChain
     @Environment(\.dismiss) var dismiss
 
     @State private var currentIndex = 0
-    @State private var timeRemaining: Int = 0
+    @State private var timeRemaining: TimeInterval = 0
     @State private var isPaused = false
     @State private var isRunning = false
     @State private var isFinished = false
-
     @State private var phase: Phase = .event
 
     enum Phase {
@@ -18,27 +18,33 @@ struct RunEventChainView: View {
     }
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    // AVAudioPlayer для звука (если нужен кастомный звук)
+    @State private var player: AVAudioPlayer?
+
     var body: some View {
-        ZStack {
-            if isFinished {
-                VStack {
-                    Spacer()
-                    Text("✅ Все события завершены")
-                        .font(.largeTitle)
-                        .bold()
-                        .multilineTextAlignment(.center)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.white)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        dismiss()
+        GeometryReader { geo in
+            ZStack {
+                (phase == .event ? Color.blue.opacity(0.3) : Color.yellow.opacity(0.3))
+                    .ignoresSafeArea()
+                    .animation(.easeInOut, value: phase)
+
+                if isFinished {
+                    VStack {
+                        Spacer()
+                        Text("✅ Все события завершены")
+                            .font(.largeTitle)
+                            .bold()
+                            .multilineTextAlignment(.center)
+                        Spacer()
                     }
-                }
-            } else {
-                VStack(spacing: 30) {
-                    VStack(spacing: 60) {
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            dismiss()
+                        }
+                    }
+                } else {
+                    VStack(spacing: 25) {
                         Text("Событие \(currentIndex + 1) из \(chain.events.count)")
                             .font(.headline)
                         
@@ -46,43 +52,100 @@ struct RunEventChainView: View {
                             .font(.title)
                             .multilineTextAlignment(.center)
                         
-                        Text("Осталось: \(timeRemaining) сек")
-                            .font(.system(size: 32, weight: .bold))
+                        GeometryReader { geo in
+                            ZStack {
+                                Circle()
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 20)
+                                
+                                Circle()
+                                    .trim(from: 0, to: progress())
+                                    .stroke(phase == .event ? Color.blue : Color.orange, style: StrokeStyle(lineWidth: 20, lineCap: .round))
+                                    .rotationEffect(.degrees(-90))
+                                    .animation(.linear(duration: 1), value: timeRemaining)
+                                
+                                Text(formattedTime(Int(timeRemaining)))
+                                    .font(.system(size: min(geo.size.width, geo.size.height) / 4, weight: .bold))
+                                
+                            }
+                            .frame(width: geo.size.width, height: geo.size.height)
+                        }
+                        .frame(height: UIScreen.main.bounds.height / 2)
                         
-                        if isRunning {
-                            Button("⏸ Пауза") {
-                                isPaused.toggle()
+                        if !isRunning {
+                            Button(action: start) {
+                                Text("▶ Старт")
+                                    .font(.title)
+                                    .foregroundColor(.white)
+                                    .frame(width: 180, height: 60)
+                                    .background(Color.blue)
+                                    .cornerRadius(15)
+                                    .shadow(radius: 5)
                             }
                         } else {
-                            Button("▶ Старт") {
-                                start()
+                            HStack(spacing: 10) {
+                                if currentIndex > 0 {
+                                    Button(action: {
+                                        currentIndex -= 1
+                                        phase = .event
+                                        resetTimer()
+                                        isPaused = false
+                                    }) {
+                                        Text("Назад")
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                            .frame(width: 90, height: 50)
+                                            .background(Color.gray)
+                                            .cornerRadius(12)
+                                            .shadow(radius: 4)
+                                    }
+                                }
+                                
+                                Button(action: { isPaused.toggle() }) {
+                                    Text(isPaused ? "Продолжить" : "Пауза")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .frame(width: 90, height: 50)
+                                        .background(isPaused ? Color.gray : Color.gray)
+                                        .cornerRadius(12)
+                                        .shadow(radius: 4)
+                                }
+                                
+                                Button(action: moveToNextEvent) {
+                                    Text("Далее")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .frame(width: 90, height: 50)
+                                        .background(Color.gray)
+                                        .cornerRadius(12)
+                                        .shadow(radius: 4)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 20)
+                            .contentShape(Rectangle()) // чтобы отступы были кликабельными, если нужно
+//                            .alignmentGuide(.center) { _ in 0 } // по центру в родительском VStack
+
+                        }
+                                                
+                        if let nextEvent = (currentIndex + 1 < chain.events.count) ? chain.events[currentIndex + 1] : nil {
+                            if !nextEvent.name.isEmpty {
+                                Text("Следующий этап: \(nextEvent.name)")
+                                    .font(.headline)
                             }
                         }
                         
-                        if isRunning && !isPaused {
-                            Button("⏭ Пропустить") {
-                                moveToNextEvent()
-                            }
-                            .foregroundColor(.red)
+                        Button(action: { dismiss() }) {
+                            Text("Завершить")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(width: 180, height: 50)
+                                .background(Color.red)
+                                .cornerRadius(15)
+                                .shadow(radius: 4)
                         }
-                        
-                        if isPaused {
-                            Button("⏭ Пропустить") {
-                                moveToNextEvent()
-                            }
-                            .foregroundColor(.red)
-                            Text("⏸ Приостановлено")
-                        }
-                    }
-                    Spacer()  // Выталкиваем кнопку вниз
-                    
-                    Button("⏹ Завершить") {
-                        dismiss()
                     }
                     .padding()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)  // чтобы занять весь экран
-                .padding()
             }
         }
         .onReceive(timer) { _ in
@@ -90,60 +153,108 @@ struct RunEventChainView: View {
             if timeRemaining > 0 {
                 timeRemaining -= 1
             } else {
+                playSound()
                 nextStep()
             }
         }
-    }
-
-
-    private func start() {
-        isRunning = true
-        currentIndex = 0
-        phase = .event
-        timeRemaining = Int(chain.events.first?.duration ?? 0)
-    }
-
-    private func nextStep() {
-        let current = chain.events[currentIndex]
-
-        switch phase {
-        case .event:
-            if current.pauseAfter > 0 {
-                phase = .pause
-                timeRemaining = Int(current.pauseAfter)
-            } else {
-                moveToNextEvent()
-            }
-        case .pause:
-            moveToNextEvent()
-        }
-    }
-
-    private func moveToNextEvent() {
-        currentIndex += 1
-        if currentIndex >= chain.events.count {
-            isFinished = true
-            isRunning = false
-        } else {
-            phase = .event
-            timeRemaining = Int(chain.events[currentIndex].duration)
+        .onAppear {
+            resetTimer()
+            prepareSound()
         }
     }
 
     private func currentEventText() -> String {
-        if currentIndex >= chain.events.count {
-            return "Готово!"
-        }
-
         let event = chain.events[currentIndex]
         switch phase {
         case .event:
-            return "🔵 \(event.name)"
+            return event.name
         case .pause:
-            return "⏳ Пауза после: \(event.name)"
+            return "Пауза"
+        }
+    }
+
+    private func progress() -> CGFloat {
+        let event = chain.events[currentIndex]
+        let total = phase == .event ? event.duration : event.pauseAfter
+        if total == 0 { return 1 }
+        return CGFloat(total - timeRemaining) / CGFloat(total)
+    }
+
+    private func start() {
+        isRunning = true
+        isPaused = false
+        resetTimer()
+    }
+
+    private func resetTimer() {
+        let event = chain.events[currentIndex]
+        timeRemaining = (phase == .event) ? event.duration : event.pauseAfter
+    }
+
+    private func moveToNextEvent() {
+        playSound()
+        nextStep()
+    }
+
+    private func nextStep() {
+        let event = chain.events[currentIndex]
+
+        switch phase {
+        case .event:
+            if event.pauseAfter > 0 {
+                phase = .pause
+                resetTimer()
+            } else {
+                advanceToNext()
+            }
+        case .pause:
+            advanceToNext()
+        }
+    }
+
+    private func advanceToNext() {
+        if currentIndex + 1 < chain.events.count {
+            currentIndex += 1
+            phase = .event
+            resetTimer()
+        } else {
+            isFinished = true
+            isRunning = false
+        }
+    }
+
+    private func prepareSound() {
+        // Если хочешь проигрывать кастомный звук из файла, раскомментируй и добавь файл в проект
+        /*
+        guard let url = Bundle.main.url(forResource: "soundName", withExtension: "mp3") else { return }
+        player = try? AVAudioPlayer(contentsOf: url)
+        player?.prepareToPlay()
+        */
+    }
+
+    private func playSound() {
+        // Если хочешь системный звук, вызови так:
+        AudioServicesPlaySystemSound(1001)
+
+        // Или, если используешь player, то:
+        // player?.stop()
+        // player?.currentTime = 0
+        // player?.play()
+    }
+    
+    private func formattedTime(_ seconds: Int) -> String {
+        if seconds >= 3600 {
+            let hours = seconds / 3600
+            let minutes = (seconds % 3600) / 60
+            return String(format: "%02d:%02d", hours, minutes)
+        } else {
+            let minutes = seconds / 60
+            let secs = seconds % 60
+            return String(format: "%02d:%02d", minutes, secs)
         }
     }
 }
+
 
 
 #Preview {
@@ -157,3 +268,4 @@ struct RunEventChainView: View {
 
     return RunEventChainView(chain: exampleChain)
 }
+
