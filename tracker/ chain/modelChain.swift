@@ -7,6 +7,6 @@ struct ChainModel: Identifiable, Codable {
     var events: [ChainEventModel]
 
     var totalDuration: TimeInterval {
-        events.reduce(0) { $0 + $1.duration_work + $1.pauseAfter }
+        events.reduce(0) { $0 + $1.duration_work + $1.duration_pause }
     }
 }

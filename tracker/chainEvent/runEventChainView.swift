@@ -175,7 +175,7 @@ struct RunEventChainView: View {
 
     private func progress() -> CGFloat {
         let event = chain.events[currentIndex]
-        let total = phase == .event ? event.duration_work : event.pauseAfter
+        let total = phase == .event ? event.duration_work : event.duration_pause
         if total == 0 { return 1 }
         return CGFloat(total - timeRemaining) / CGFloat(total)
     }
@@ -188,7 +188,7 @@ struct RunEventChainView: View {
 
     private func resetTimer() {
         let event = chain.events[currentIndex]
-        timeRemaining = (phase == .event) ? event.duration_work : event.pauseAfter
+        timeRemaining = (phase == .event) ? event.duration_work : event.duration_pause
     }
 
     private func moveToNextEvent() {
@@ -201,7 +201,7 @@ struct RunEventChainView: View {
 
         switch phase {
         case .event:
-            if event.pauseAfter > 0 {
+            if event.duration_pause > 0 {
                 phase = .pause
                 resetTimer()
             } else {
@@ -259,9 +259,9 @@ struct RunEventChainView: View {
 
 #Preview {
     let exampleEvents = [
-        ChainEventModel(id: UUID(), name: "Разминка", duration_work: 60, pauseAfter: 10),
-        ChainEventModel(id: UUID(), name: "Бег", duration_work: 120, pauseAfter: 20),
-        ChainEventModel(id: UUID(), name: "Отдых", duration_work: 90, pauseAfter: 0)
+        ChainEventModel(id: UUID(), name: "Разминка", duration_work: 60, duration_pause: 10),
+        ChainEventModel(id: UUID(), name: "Бег", duration_work: 120, duration_pause: 20),
+        ChainEventModel(id: UUID(), name: "Отдых", duration_work: 90, duration_pause: 0)
     ]
 
     let exampleChain = ChainModel(id: UUID(), name: "Утренние упражнения", events: exampleEvents)

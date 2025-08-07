@@ -79,9 +79,9 @@ struct ContentView: View {
             id: UUID(),
             name: "Утренняя тренировка",
             events: [
-                ChainEventModel(id: UUID(), name: "Разминка", duration_work: 5, pauseAfter: 3),
-                ChainEventModel(id: UUID(), name: "Бег", duration_work: 5, pauseAfter: 3),
-                ChainEventModel(id: UUID(), name: "Растяжка", duration_work: 5, pauseAfter: 2)
+                ChainEventModel(id: UUID(), name: "Разминка", duration_work: 5, duration_pause: 3),
+                ChainEventModel(id: UUID(), name: "Бег", duration_work: 5, duration_pause: 3),
+                ChainEventModel(id: UUID(), name: "Растяжка", duration_work: 5, duration_pause: 2)
             ]
         )
     ]
