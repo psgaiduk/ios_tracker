@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct trackerApp: App {
-    @StateObject private var store = EventChainStore()
+    @StateObject private var store = ChainStore()
 
     var body: some Scene {
         WindowGroup {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AddChainView: View {
     @Environment(\.dismiss) var dismiss
-    @ObservedObject var store: EventChainStore
+    @ObservedObject var store: ChainStore
     @State private var name = ""
 
     var body: some View {

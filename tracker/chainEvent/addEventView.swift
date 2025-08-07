@@ -3,7 +3,7 @@ import SwiftUI
 struct AddEventView: View {
     @Environment(\.dismiss) var dismiss
     var chainID: UUID
-    @ObservedObject var store: EventChainStore
+    @ObservedObject var store: ChainStore
 
     @State private var name = ""
     @State private var duration: Double = 60

@@ -3,7 +3,7 @@ import SwiftUI
 struct ChainView: View {
     @Environment(\.dismiss) var dismiss
     @State var chain: ChainModel
-    @ObservedObject var store: EventChainStore
+    @ObservedObject var store: ChainStore
     
     @State private var showRunView = false
     @State private var showingAddEvent = false
@@ -92,7 +92,7 @@ struct ChainView: View {
 
 
 #Preview {
-    let testStore = EventChainStore()
+    let testStore = ChainStore()
     let exampleEvents = [
         Event(id: UUID(), name: "Разминка", duration: 60, pauseAfter: 10),
         Event(id: UUID(), name: "Бег", duration: 120, pauseAfter: 20),

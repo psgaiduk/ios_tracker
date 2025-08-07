@@ -1,6 +1,6 @@
 import Foundation
 
-class EventChainStore: ObservableObject {
+class ChainStore: ObservableObject {
     @Published var chains: [ChainModel] = []
 
     func addChain(name: String) {

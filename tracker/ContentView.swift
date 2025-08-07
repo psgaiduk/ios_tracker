@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject var store: EventChainStore
+    @StateObject var store: ChainStore
 
     @State private var showingAddChain = false
     @State private var runningChain: ChainModel?
@@ -73,7 +73,7 @@ struct ContentView: View {
 
 
 #Preview {
-    let testStore = EventChainStore()
+    let testStore = ChainStore()
     testStore.chains = [
         ChainModel(
             id: UUID(),
