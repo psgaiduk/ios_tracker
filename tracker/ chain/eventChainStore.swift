@@ -1,10 +1,10 @@
 import Foundation
 
 class EventChainStore: ObservableObject {
-    @Published var chains: [EventChain] = []
+    @Published var chains: [ChainModel] = []
 
     func addChain(name: String) {
-        let newChain = EventChain(id: UUID(), name: name, events: [])
+        let newChain = ChainModel(id: UUID(), name: name, events: [])
         chains.append(newChain)
     }
 

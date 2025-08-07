@@ -1,0 +1,12 @@
+import Foundation
+
+
+struct ChainModel: Identifiable, Codable {
+    let id: UUID
+    var name: String
+    var events: [Event]
+
+    var totalDuration: TimeInterval {
+        events.reduce(0) { $0 + $1.duration + $1.pauseAfter }
+    }
+}

@@ -4,8 +4,8 @@ struct ContentView: View {
     @StateObject var store: EventChainStore
 
     @State private var showingAddChain = false
-    @State private var runningChain: EventChain?
-    @State private var editingChain: EventChain?
+    @State private var runningChain: ChainModel?
+    @State private var editingChain: ChainModel?
 
     var body: some View {
         NavigationStack {
@@ -75,7 +75,7 @@ struct ContentView: View {
 #Preview {
     let testStore = EventChainStore()
     testStore.chains = [
-        EventChain(
+        ChainModel(
             id: UUID(),
             name: "Утренняя тренировка",
             events: [

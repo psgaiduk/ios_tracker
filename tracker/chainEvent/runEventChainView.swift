@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation // для AVAudioPlayer
 
 struct RunEventChainView: View {
-    let chain: EventChain
+    let chain: ChainModel
     @Environment(\.dismiss) var dismiss
 
     @State private var currentIndex = 0
@@ -264,7 +264,7 @@ struct RunEventChainView: View {
         Event(id: UUID(), name: "Отдых", duration: 90, pauseAfter: 0)
     ]
 
-    let exampleChain = EventChain(id: UUID(), name: "Утренние упражнения", events: exampleEvents)
+    let exampleChain = ChainModel(id: UUID(), name: "Утренние упражнения", events: exampleEvents)
 
     return RunEventChainView(chain: exampleChain)
 }
