@@ -19,7 +19,7 @@ struct ChainView: View {
                     } label: {
                         VStack(alignment: .leading) {
                             Text(event.name).font(.headline)
-                            Text("Длительность: \(formatDuration(event.duration)), пауза: \(formatDuration(event.pauseAfter))")
+                            Text("Длительность: \(formatDuration(event.duration_work)), пауза: \(formatDuration(event.pauseAfter))")
                                 .font(.subheadline)
                         }
                     }
@@ -94,9 +94,9 @@ struct ChainView: View {
 #Preview {
     let testStore = ChainStore()
     let exampleEvents = [
-        ChainEventModel(id: UUID(), name: "Разминка", duration: 60, pauseAfter: 10),
-        ChainEventModel(id: UUID(), name: "Бег", duration: 120, pauseAfter: 20),
-        ChainEventModel(id: UUID(), name: "Отдых", duration: 90, pauseAfter: 0)
+        ChainEventModel(id: UUID(), name: "Разминка", duration_work: 60, pauseAfter: 10),
+        ChainEventModel(id: UUID(), name: "Бег", duration_work: 120, pauseAfter: 20),
+        ChainEventModel(id: UUID(), name: "Отдых", duration_work: 90, pauseAfter: 0)
     ]
 
     let exampleChain = ChainModel(id: UUID(), name: "Утренние упражнения", events: exampleEvents)
