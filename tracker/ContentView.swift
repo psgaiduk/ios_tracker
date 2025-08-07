@@ -39,7 +39,7 @@ struct ContentView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
 
-                        NavigationLink(destination: EventChainView(chain: chain, store: store)) {
+                        NavigationLink(destination: ChainView(chain: chain, store: store)) {
                             Image(systemName: "pencil")
                                 .foregroundColor(.blue)
                                 .frame(width: 24, height: 24)
@@ -64,7 +64,7 @@ struct ContentView: View {
                 RunEventChainView(chain: chain)
             }
             .fullScreenCover(item: $editingChain) { chain in
-                EventChainView(chain: chain, store: store)
+                ChainView(chain: chain, store: store)
             }
         }
     }
