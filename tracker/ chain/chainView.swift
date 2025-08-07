@@ -8,7 +8,7 @@ struct ChainView: View {
     @State private var showRunView = false
     @State private var showingAddEvent = false
     @State private var showingEditChainName = false
-    @State private var editingEvent: Event?
+    @State private var editingEvent: ChainEventModel?
 
     var body: some View {
         List {
@@ -94,9 +94,9 @@ struct ChainView: View {
 #Preview {
     let testStore = ChainStore()
     let exampleEvents = [
-        Event(id: UUID(), name: "Разминка", duration: 60, pauseAfter: 10),
-        Event(id: UUID(), name: "Бег", duration: 120, pauseAfter: 20),
-        Event(id: UUID(), name: "Отдых", duration: 90, pauseAfter: 0)
+        ChainEventModel(id: UUID(), name: "Разминка", duration: 60, pauseAfter: 10),
+        ChainEventModel(id: UUID(), name: "Бег", duration: 120, pauseAfter: 20),
+        ChainEventModel(id: UUID(), name: "Отдых", duration: 90, pauseAfter: 0)
     ]
 
     let exampleChain = ChainModel(id: UUID(), name: "Утренние упражнения", events: exampleEvents)

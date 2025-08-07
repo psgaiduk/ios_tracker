@@ -259,9 +259,9 @@ struct RunEventChainView: View {
 
 #Preview {
     let exampleEvents = [
-        Event(id: UUID(), name: "Разминка", duration: 60, pauseAfter: 10),
-        Event(id: UUID(), name: "Бег", duration: 120, pauseAfter: 20),
-        Event(id: UUID(), name: "Отдых", duration: 90, pauseAfter: 0)
+        ChainEventModel(id: UUID(), name: "Разминка", duration: 60, pauseAfter: 10),
+        ChainEventModel(id: UUID(), name: "Бег", duration: 120, pauseAfter: 20),
+        ChainEventModel(id: UUID(), name: "Отдых", duration: 90, pauseAfter: 0)
     ]
 
     let exampleChain = ChainModel(id: UUID(), name: "Утренние упражнения", events: exampleEvents)

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Event: Identifiable, Codable {
+struct ChainEventModel: Identifiable, Codable {
     let id: UUID
     var name: String
     var duration: TimeInterval // в секундах

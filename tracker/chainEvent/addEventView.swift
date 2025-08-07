@@ -20,7 +20,7 @@ struct AddEventView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Сохранить") {
-                        let newEvent = Event(id: UUID(), name: name, duration: duration, pauseAfter: pause)
+                        let newEvent = ChainEventModel(id: UUID(), name: name, duration: duration, pauseAfter: pause)
                         store.addEvent(to: chainID, event: newEvent)
                         dismiss()
                     }

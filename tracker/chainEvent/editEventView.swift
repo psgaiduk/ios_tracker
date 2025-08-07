@@ -5,12 +5,12 @@ struct EditEventView: View {
     @State var duration: TimeInterval
     @State var pauseAfter: TimeInterval
 
-    var originalEvent: Event
-    var onSave: (Event) -> Void
+    var originalEvent: ChainEventModel
+    var onSave: (ChainEventModel) -> Void
 
     @Environment(\.dismiss) var dismiss
 
-    init(event: Event, onSave: @escaping (Event) -> Void) {
+    init(event: ChainEventModel, onSave: @escaping (ChainEventModel) -> Void) {
         self.originalEvent = event
         self._name = State(initialValue: event.name)
         self._duration = State(initialValue: event.duration)
@@ -29,7 +29,7 @@ struct EditEventView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Сохранить") {
-                        let updated = Event(id: originalEvent.id, name: name, duration: duration, pauseAfter: pauseAfter)
+                        let updated = ChainEventModel(id: originalEvent.id, name: name, duration: duration, pauseAfter: pauseAfter)
                         onSave(updated)
                         dismiss()
                     }
